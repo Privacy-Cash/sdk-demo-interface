@@ -93,6 +93,11 @@ export default function Home() {
     let encryptionService = new EncryptionService();
     encryptionService.deriveEncryptionKeyFromSignature(signedSignature);
     let newUtxo = 0
+
+    // set UTXO offset to avoid fetching too many UTXOs on first fetch. 
+    let firstTimeFetchNumber = 60_000
+    let offset = await getUtxoOffset(firstTimeFetchNumber, token.name.toLowerCase());
+    console.log('Using UTXO offset:', offset);
     try {
       if (token.name.toLowerCase() == 'sol') {
         const myValidUtxos = await getUtxos({
@@ -100,6 +105,7 @@ export default function Home() {
           publicKey,
           storage: localStorage,
           encryptionService,
+
         });
         newUtxo = getBalanceFromUtxos(myValidUtxos).lamports / LAMPORTS_PER_SOL
       } else {
@@ -267,3 +273,19 @@ export default function Home() {
   );
 }
 
+
+async function getUtxoOffset(firstTimeFetchNumber: number, tokenSymbol: string): Promise<number> {
+  let offset = 0
+  try {
+    let res = await fetch('https://api3.privacycash.org/merkle/root?token=' + tokenSymbol)
+    let j = await res.json()
+    if (typeof j.nextIndex == 'number') {
+      if (j.nextIndex > firstTimeFetchNumber) {
+        offset = j.nextIndex - firstTimeFetchNumber
+      }
+    }
+  } catch (e: any) {
+    return 0
+  }
+  return offset
+}
