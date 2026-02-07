@@ -105,7 +105,7 @@ export default function Home() {
           publicKey,
           storage: localStorage,
           encryptionService,
-
+          offset
         });
         newUtxo = getBalanceFromUtxos(myValidUtxos).lamports / LAMPORTS_PER_SOL
       } else {
@@ -114,7 +114,8 @@ export default function Home() {
           publicKey,
           storage: localStorage,
           encryptionService,
-          mintAddress: token.pubkey
+          mintAddress: token.pubkey,
+          offset
         });
         newUtxo = getBalanceFromUtxosSPL(myValidUtxosSPL).base_units / token.units_per_token
       }
