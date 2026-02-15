@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface Token {
     name: string;
@@ -28,9 +27,22 @@ export default function TokenSelector({ tokens, liveToken, setLiveToken }: Token
         >
             {tokens.map((t) => (
                 <option key={t.name} value={t.name.toLowerCase()}>
-                    {t.name}
+                    {uiTokenName(t.name)}
                 </option>
             ))}
         </select>
     );
+}
+
+function uiTokenName(name: string) {
+    switch (name) {
+        case 'jlwsol':
+            return 'jlWSOL'
+        case 'jlusdc':
+            return 'jlUSDC'
+        case 'store':
+            return 'stORE'
+        default:
+            return name.toUpperCase()
+    }
 }
